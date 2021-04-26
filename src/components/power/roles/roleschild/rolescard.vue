@@ -108,6 +108,7 @@ export default {
   },
   // 递归拿到选中的id
   getleafkeys(node,arr){
+    //如果是三级菜单
     if(!node.child){
       return arr.push(node.id)
     }
