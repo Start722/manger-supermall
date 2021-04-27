@@ -321,8 +321,9 @@ export default {
   },
   // 展示分配角色对话框
   async setrole(userinfo){
+    //拿到最外层的用户信息
     this.userinfo = userinfo
-    //在展示对话框之前获取所有角色列表
+    //发起网络请求拿到角色列表
     const res = await this.$http.get('roles')
     if(res.data.meta.status !== 200){
       return this.$message.error('获取角色列表失败！')
