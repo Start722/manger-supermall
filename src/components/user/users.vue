@@ -39,7 +39,7 @@
             <el-switch v-model="scope.row.mg_state" @change="userStateChanged(scope.row)"></el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width='300px'>
+        <el-table-column label="操作" width='200px'>
           <template slot-scope="scope">
             <el-tooltip :enterable='false' effect="light" content="编辑用户" placement="top">
               <el-button type="primary" icon="el-icon-edit" size='mini' @click="usermsgvisible(scope.row.id)"></el-button>
@@ -47,8 +47,8 @@
             <el-tooltip :enterable='false' effect="light" content="删除用户" placement="top">
               <el-button type="danger" icon="el-icon-delete" size='mini' @click="removeuser(scope.row.id)"></el-button>
             </el-tooltip>
-            <el-tooltip :enterable='false' effect="light" content="用户权限" placement="top">
-              <el-button type="warning" icon="el-icon-setting" size='mini'></el-button>
+            <el-tooltip :enterable='false' effect="light" content="分配权限" placement="top">
+              <el-button type="warning" icon="el-icon-setting" size='mini' @click="setrole(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -115,6 +115,29 @@
         <el-button type="primary" @click="editusermsg">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="setrolevisible" width="50%">
+    <div>
+      <p>当前的用户：{{userinfo.username}}</p>
+      <p>当前的角色：{{userinfo.role_name}}</p>
+      <p>分配新角色：
+        <el-select v-model="selectroleid" placeholder="请选择">
+          <el-option
+            v-for="item in roleslist"
+            :key="item.id"
+            :label="item.roleName"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </p>
+    </div>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="setrolevisible = false">取 消</el-button>
+      <el-button type="primary" @click="saveroleinfo">确 定</el-button>
+    </span>
+  </el-dialog>
+
   </div>
 </template>
 
@@ -152,6 +175,14 @@ export default {
       adddialogvisible:false,
       //修改用户对话框的显示与隐藏
       editusermsgvisible:false,
+      // 分配权限对话款的显示与隐藏
+      setrolevisible:false,
+      //分配权限对话框的数据
+      userinfo:{},
+      //所有角色的数据列表
+      roleslist:[],
+      // select框选中的角色
+      selectroleid:'',
       // 添加用户的表单数据
       addfrom:{
         username:'',
@@ -287,6 +318,29 @@ export default {
             this.$message.success('删除用户成功')
             this.getUserList()
         }
+  },
+  // 展示分配角色对话框
+  async setrole(userinfo){
+    this.userinfo = userinfo
+    //在展示对话框之前获取所有角色列表
+    const res = await this.$http.get('roles')
+    if(res.data.meta.status !== 200){
+      return this.$message.error('获取角色列表失败！')
+    }
+    this.roleslist = res.data.data
+    this.setrolevisible = true
+  },
+  //保存要分配的角色并发起网络请求
+  async saveroleinfo(){
+    if(!this.selectroleid){
+      return this.$message.error('请选择要分配的角色！')
+    }
+    const res = await this.$http.put(`users/${this.userinfo.id}/role`,{rid:this.selectroleid})
+    if(res.data.meta.status == 200){
+      return this.$message.success('更新角色成功！')
+    }
+    this.getUserList()
+    this.setrolevisible = false
   }
   },
 }
