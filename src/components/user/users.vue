@@ -265,7 +265,7 @@ export default {
     //修改权限的boolean值
     async userStateChanged(userinfo){
       //console.log(userinfo);
-      await this.$http.put('userlist',`${userinfo.id}`)
+      await this.$http.put(`userlist/${userinfo.id}/state/${userinfo.mg_state}`)
       this.$message.success('修改状态成功！')
       //console.log(res);
     },
@@ -335,9 +335,9 @@ export default {
     if(!this.selectroleid){
       return this.$message.error('请选择要分配的角色！')
     }
-    const res = await this.$http.put(`users/${this.userinfo.id}/role`,{rid:this.selectroleid})
-    if(res.data.meta.status == 200){
-      return this.$message.success('更新角色成功！')
+    const res = await this.$http.put(`userlist/${this.userinfo.id}/role`,{rid:this.selectroleid})
+    if(res.data.meta.status !== 200){
+     return this.$message.success('更新角色失败！')
     }
     this.getUserList()
     this.setrolevisible = false
