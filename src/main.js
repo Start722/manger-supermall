@@ -6,7 +6,7 @@ import './plugins/element.js'
 import './assets/css/global.css'
 
 import axios from 'axios'
-axios.defaults.baseURL = 'http://192.168.1.131:5000/'
+axios.defaults.baseURL = 'http://121.43.154.34:5000/'
 //.request是一个请求拦截器，只要axios发起请求（请求到达服务器之前）
 //就会先调用这个回调函数
 axios.interceptors.request.use(config => {
